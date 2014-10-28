@@ -5,27 +5,52 @@
 
 using namespace std;
 
-int main(int argc, char *argv[])
-{
     //Todo: command shell mode
     //bool commandMode = false;
     //if(argc == 1) commandMode = true;
-    //cout << commandMode << endl;
-    //cout << argc << endl << argv[1] << endl;
-    char *prgPtr;
-    char input;
+bool verifyIsAction(char);
+
+int main(int argc, char *argv[])
+{
+    //int allocation = 65536;			//Size of memory to play with
+    char *ptr;							//Instruction pointer
+    char array[65536];					//Memory array
+	char input;
     ifstream inFile;
 	inFile.open(argv[1]);
+	inFile >> input;
+	cout << input << endl;
     
     while(inFile.good()){
     	input = inFile.get();
-    	switch(input){
-    		
-    		default: continue;
-    	}
+    	
     }
     
     
     system("PAUSE");
     return EXIT_SUCCESS;
+}
+
+bool verifyIsAction(char input){
+	switch(input){
+    	case '>':
+    		++ptr;
+    		break;
+    	case '<':
+    		--ptr;
+    		break;
+    	case '+':
+    		++*ptr;
+    		break;
+    	case '-':
+    		--*ptr;
+    		break;
+    	case '.':
+    		putchar(*ptr);
+    		break;
+    	case ',':
+    		*ptr = getchar();
+    		break;
+    	default: 
+	}
 }
