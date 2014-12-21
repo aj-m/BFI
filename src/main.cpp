@@ -17,24 +17,24 @@ bool ParseBrainfuckSyntax( unsigned char );
 //bool EvalBrainfuckSyntax( unsigned char );
 
 //Globals
-unsigned char *ptr;							//Data pointer
-unsigned char arrayMemory[65536] = { 0 };	//Memory array
-string g_instructions = "";					//Vector for tracking instructions
+unsigned char *ptr;                       //Data pointer
+unsigned char arrayMemory[65536] = { 0 }; //Memory array
+string g_instructions = "";               //Vector for tracking instructions
 stack<int> beginLoopAddresses;
 queue<int> endLoopAddresses;
 bool g_commandMode = false;
 
 int main(int argc, char *argv[])
 {
-	unsigned char input;
-	ifstream fin;
-	fin.open("example.bf");
-	//fin.open(argv[1]);
+    unsigned char input;
+    ifstream fin;
+    fin.open("example.bf");
+    //fin.open(argv[1]);
     while(fin.good()){
-    	//Read input file and determine instructions
-    	input = fin.get();
-    	SDBG && DEBUG && cout << input << endl;
-    	if( ParseBrainfuckSyntax( input ) ) g_instructions += input;
+        //Read input file and determine instructions
+        input = fin.get();
+        SDBG && DEBUG && cout << input << endl;
+        if( ParseBrainfuckSyntax( input ) ) g_instructions += input;
     }
     DEBUG && cout << g_instructions << endl;
     
@@ -72,8 +72,8 @@ bool EvalBrainfuckSyntax(char input){
 
 bool ParseBrainfuckSyntax( unsigned char input){
 	//Return true if input is valid brainfuck instruction.
-	switch(input)
-	{
+    switch(input)
+    {
     case '>':
     case '<':
     case '+':
@@ -82,9 +82,9 @@ bool ParseBrainfuckSyntax( unsigned char input){
     case ',':
     case '[':
     case ']':
-    	return true;
+        return true;
     default:
-    	return false;
-	}
+        return false;
+    }
 }
 
