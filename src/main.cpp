@@ -11,8 +11,6 @@
 
 using namespace std;
 
-//Todo: command shell mode
-//if(argc == 1) commandMode = true;
 bool ParseBrainfuckSyntax( unsigned char );
 bool EvalBrainfuckSyntax( unsigned char );
 
@@ -21,12 +19,19 @@ unsigned char *ptr;                       //Data pointer
 unsigned char arrayMemory[65536] = { 0 }; //Memory array
 string g_instructions = "";               //Vector for tracking instructions
 int loopBeginnings,loopEndings,loopDepth = 0;
-stack<int> beginLoopAddresses;
-queue<int> endLoopAddresses;
+int PC = 0;
+int *loopStart,*loopEnd;
+//Todo: command shell mode
+//if(argc == 1) commandMode = true;
 bool g_commandMode = false;
+
+
 
 int main(int argc, char *argv[])
 {
+    ptr = arrayMemory;
+    queue<int> beginLoopAddresses;
+    stack<int> endLoopAddresses;
     unsigned char input;
     ifstream fin;
     fin.open("example.bf");
@@ -34,7 +39,7 @@ int main(int argc, char *argv[])
     while(fin.good()){
         //Read input file and determine instructions
         input = fin.get();
-        SDBG && DEBUG && cout << input << endl;
+        //SDBG && DEBUG && cout << input << endl;
         if( ParseBrainfuckSyntax( input ) ) g_instructions += input;
     }
     DEBUG && cout << g_instructions << endl;
@@ -49,13 +54,31 @@ int main(int argc, char *argv[])
             loopEndings++;
         }
     }
+    DEBUG && cout << "Trace: counted brackets\n";
     if (loopBeginnings != loopEndings){
         cout << "Syntax error: incomplete loop. Exiting program." << endl;
         return 1;
     }
-    
-    
-    
+    DEBUG && cout << "Trace: all loops work\n";
+    loopStart = new int[loopBeginnings];
+    loopEnd = new int[loopEndings];
+    for(int i = 0; i < loopBeginnings; i++)
+    {
+        loopStart[i] = beginLoopAddresses.front();
+        beginLoopAddresses.pop();
+        loopEnd[i] = endLoopAddresses.top();
+        endLoopAddresses.pop();
+    }
+    //end "lexing"
+    DEBUG && cout << "Trace: lexing complete\n";
+
+    //program execution loop
+    for(PC = 0; PC < g_instructions.length(); PC++){
+        unsigned char cur_ins = (unsigned char) g_instructions[PC];
+        bool status;
+        status = EvalBrainfuckSyntax( cur_ins );
+        if(!status) cout << "Unknown syntax error.\n";
+    }
     //system("PAUSE");
     return 0;
 }
@@ -80,6 +103,19 @@ bool EvalBrainfuckSyntax( unsigned char input ){
     case ',':
         *ptr = getchar();
         break;
+    case '[':
+        if(*ptr == 0){
+            PC = loopEnd[loopDepth];
+        } else {
+            loopDepth++;
+        }
+        break;
+    case ']':
+        if(*ptr == 0){
+            loopDepth--;
+        } else {
+            PC = (loopStart[loopDepth]+1);
+        }
     default:
         return false;
     }
