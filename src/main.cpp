@@ -1,37 +1,49 @@
+#define DEBUG true
+#define SDBG false
+
 #include <cstdlib>
+#include <string>
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <stack>
+#include <queue>
 
 using namespace std;
 
-    //Todo: command shell mode
-    //bool commandMode = false;
-    //if(argc == 1) commandMode = true;
-bool verifyIsAction(char);
+//Todo: command shell mode
+//if(argc == 1) commandMode = true;
+bool ParseBrainfuckSyntax( unsigned char );
+//bool EvalBrainfuckSyntax( unsigned char );
+
+//Globals
+unsigned char *ptr;							//Data pointer
+unsigned char arrayMemory[65536] = { 0 };	//Memory array
+string g_instructions = "";					//Vector for tracking instructions
+stack<int> beginLoopAddresses;
+queue<int> endLoopAddresses;
+bool g_commandMode = false;
 
 int main(int argc, char *argv[])
 {
-    //int allocation = 65536;			//Size of memory to play with
-    char *ptr;							//Instruction pointer
-    char array[65536];					//Memory array
-	char input;
-    ifstream inFile;
-	inFile.open(argv[1]);
-	inFile >> input;
-	cout << input << endl;
-    
-    while(inFile.good()){
-    	input = inFile.get();
-    	
+	unsigned char input;
+	ifstream fin;
+	fin.open("example.bf");
+	//fin.open(argv[1]);
+    while(fin.good()){
+    	//Read input file and determine instructions
+    	input = fin.get();
+    	SDBG && DEBUG && cout << input << endl;
+    	if( ParseBrainfuckSyntax( input ) ) g_instructions += input;
     }
+    DEBUG && cout << g_instructions << endl;
     
     
-    system("PAUSE");
-    return EXIT_SUCCESS;
+    //system("PAUSE");
+    return 0;
 }
-
-bool verifyIsAction(char input){
+/*
+bool EvalBrainfuckSyntax(char input){
 	switch(input){
     	case '>':
     		++ptr;
@@ -51,6 +63,28 @@ bool verifyIsAction(char input){
     	case ',':
     		*ptr = getchar();
     		break;
-    	default: 
+    	default:
+    		return false;
+	}
+	return true;
+}
+*/
+
+bool ParseBrainfuckSyntax( unsigned char input){
+	//Return true if input is valid brainfuck instruction.
+	switch(input)
+	{
+    case '>':
+    case '<':
+    case '+':
+    case '-':
+    case '.':
+    case ',':
+    case '[':
+    case ']':
+    	return true;
+    default:
+    	return false;
 	}
 }
+
