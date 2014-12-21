@@ -14,12 +14,13 @@ using namespace std;
 //Todo: command shell mode
 //if(argc == 1) commandMode = true;
 bool ParseBrainfuckSyntax( unsigned char );
-//bool EvalBrainfuckSyntax( unsigned char );
+bool EvalBrainfuckSyntax( unsigned char );
 
 //Globals
 unsigned char *ptr;                       //Data pointer
 unsigned char arrayMemory[65536] = { 0 }; //Memory array
 string g_instructions = "";               //Vector for tracking instructions
+int loopBeginnings,loopEndings,loopDepth = 0;
 stack<int> beginLoopAddresses;
 queue<int> endLoopAddresses;
 bool g_commandMode = false;
@@ -38,41 +39,57 @@ int main(int argc, char *argv[])
     }
     DEBUG && cout << g_instructions << endl;
     
+    for(int i = 0; i < g_instructions.length(); i++){
+        if( g_instructions[i] == '[' ){
+            beginLoopAddresses.push(i);
+            loopBeginnings++;
+        }
+        if( g_instructions[i] == ']' ){
+            endLoopAddresses.push(i);
+            loopEndings++;
+        }
+    }
+    if (loopBeginnings != loopEndings){
+        cout << "Syntax error: incomplete loop. Exiting program." << endl;
+        return 1;
+    }
+    
+    
     
     //system("PAUSE");
     return 0;
 }
-/*
-bool EvalBrainfuckSyntax(char input){
-	switch(input){
-    	case '>':
-    		++ptr;
-    		break;
-    	case '<':
-    		--ptr;
-    		break;
-    	case '+':
-    		++*ptr;
-    		break;
-    	case '-':
-    		--*ptr;
-    		break;
-    	case '.':
-    		putchar(*ptr);
-    		break;
-    	case ',':
-    		*ptr = getchar();
-    		break;
-    	default:
-    		return false;
-	}
-	return true;
-}
-*/
 
-bool ParseBrainfuckSyntax( unsigned char input){
-	//Return true if input is valid brainfuck instruction.
-    switch(input)
+bool EvalBrainfuckSyntax( unsigned char input ){
+    switch( input ){
+    case '>':
+        ++ptr;
+        break;
+    case '<':
+        --ptr;
+        break;
+    case '+':
+        ++*ptr;
+        break;
+    case '-':
+        --*ptr;
+        break;
+    case '.':
+	    putchar(*ptr);
+        break;
+    case ',':
+        *ptr = getchar();
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+
+bool ParseBrainfuckSyntax( unsigned char input ){
+    //Return true if input is valid brainfuck instruction.
+    switch( input )
     {
     case '>':
     case '<':
