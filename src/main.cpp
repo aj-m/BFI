@@ -1,4 +1,4 @@
-#define DEBUG true
+#define DEBUG false
 #define SDBG false
 
 #include <cstdlib>
@@ -17,10 +17,11 @@ bool EvalBrainfuckSyntax( unsigned char );
 //Globals
 unsigned char *ptr;                       //Data pointer
 unsigned char arrayMemory[65536] = { 0 }; //Memory array
-string g_instructions = "";               //Vector for tracking instructions
+unsigned char *g_instructions;            //Vector for tracking instructions
+int g_instructionc = 0;
 int loopBeginnings,loopEndings,loopDepth = 0;
 int PC = 0;
-int *loopStart,*loopEnd;
+int **loopStart,**loopEnd;
 //Todo: command shell mode
 //if(argc == 1) commandMode = true;
 bool g_commandMode = false;
@@ -29,22 +30,36 @@ bool g_commandMode = false;
 
 int main(int argc, char *argv[])
 {
+    string filename;
+    filename = "example.bf";
     ptr = arrayMemory;
     queue<int> beginLoopAddresses;
     stack<int> endLoopAddresses;
     unsigned char input;
     ifstream fin;
-    fin.open("example.bf");
+    fin.open(filename.c_str());
     //fin.open(argv[1]);
     while(fin.good()){
         //Read input file and determine instructions
         input = fin.get();
         //SDBG && DEBUG && cout << input << endl;
-        if( ParseBrainfuckSyntax( input ) ) g_instructions += input;
+        if( ParseBrainfuckSyntax( input ) ) g_instructionc++;
     }
+    g_instructions = new unsigned char[g_instructionc];
+    fin.close();
+    fin.open(filename.c_str());
+    int ins_index_temp = 0;
+    while(fin.good()){
+        input = fin.get();
+        if( ParseBrainfuckSyntax( input ) ){
+            g_instructions[ins_index_temp] = input;
+            ins_index_temp++;
+        }
+    }
+    
     DEBUG && cout << g_instructions << endl;
     
-    for(int i = 0; i < g_instructions.length(); i++){
+    for(int i = 0; i < g_instructionc; i++){
         if( g_instructions[i] == '[' ){
             beginLoopAddresses.push(i);
             loopBeginnings++;
@@ -60,20 +75,22 @@ int main(int argc, char *argv[])
         return 1;
     }
     DEBUG && cout << "Trace: all loops work\n";
-    loopStart = new int[loopBeginnings];
-    loopEnd = new int[loopEndings];
+    loopStart = new int*[loopBeginnings];
+    loopEnd = new int*[loopEndings];
     for(int i = 0; i < loopBeginnings; i++)
     {
-        loopStart[i] = beginLoopAddresses.front();
+        *loopStart[i] = beginLoopAddresses.front();
         beginLoopAddresses.pop();
-        loopEnd[i] = endLoopAddresses.top();
+        *loopEnd[i] = endLoopAddresses.top();
         endLoopAddresses.pop();
     }
+    DEBUG && cout << *loopStart << endl;
+    DEBUG && cout << *loopEnd << endl;
     //end "lexing"
     DEBUG && cout << "Trace: lexing complete\n";
 
     //program execution loop
-    for(PC = 0; PC < g_instructions.length(); PC++){
+    for(PC = 0; PC < g_instructionc; PC++){
         unsigned char cur_ins = (unsigned char) g_instructions[PC];
         bool status;
         status = EvalBrainfuckSyntax( cur_ins );
@@ -84,6 +101,7 @@ int main(int argc, char *argv[])
 }
 
 bool EvalBrainfuckSyntax( unsigned char input ){
+    DEBUG && cout << input;
     switch( input ){
     case '>':
         ++ptr;
@@ -105,7 +123,7 @@ bool EvalBrainfuckSyntax( unsigned char input ){
         break;
     case '[':
         if(*ptr == 0){
-            PC = loopEnd[loopDepth];
+            PC = *loopEnd[loopDepth];
         } else {
             loopDepth++;
         }
@@ -114,11 +132,13 @@ bool EvalBrainfuckSyntax( unsigned char input ){
         if(*ptr == 0){
             loopDepth--;
         } else {
-            PC = (loopStart[loopDepth]+1);
+            PC = (*loopStart[loopDepth]);
         }
+        break;
     default:
         return false;
     }
+    cout << ' ' << "returning from parse\n";
     return true;
 }
 
