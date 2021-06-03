@@ -1,4 +1,6 @@
 #include "brain.h"
+#include <cstdlib>
+#include <cstdio>
 #include <stack>
 #include <queue>
 #ifdef DEFAULT_MEMSIZE
@@ -8,10 +10,6 @@
 #endif
 #define DEFAULT_MEMSIZE 30000
 
-Brain::Brain() {
-	this(DEFAULT_MEMSIZE);
-}
-
 Brain::Brain(int memSize) {
 	int actualMemSize = 0;
 	if (memSize < 0 || memSize > 65536) {
@@ -19,15 +17,29 @@ Brain::Brain(int memSize) {
 	} else {
 		actualMemSize = memSize;
 	}
-	this.memory = new unsigned char[actualMemSize];
-	this.ptr = this.memory;
-	this.cInstruction = 0;
-	this.cLoopEntries = 0;
-	this.cLoopExits = 0;
-	this.cLoopDepth = 0;
-	this.PC = 0;
+	memory = new unsigned char[actualMemSize];
+	ptr = memory;
+	cInstruction = 0;
+	cLoopEntries = 0;
+	cLoopExits = 0;
+	cLoopDepth = 0;
+	PC = 0;
 
 	//this.
+}
+
+Brain::~Brain() {
+	delete[] *loopStart;
+	delete[] loopStart;
+	loopStart = nullptr;
+	delete[] *loopEnd;
+	delete[] loopEnd;
+	loopEnd = nullptr;
+	delete[] instructions;
+	instructions = nullptr;
+	delete[] memory;
+	memory = nullptr;
+	ptr = nullptr;
 }
 
 int Brain::fuck(const char* path) {
@@ -52,33 +64,33 @@ bool Brain::isValidBF(unsigned char item) {
 bool Brain::eval(unsigned char item) {
 	switch(item) {
 	case '>':
-		++(this.ptr);
+		++ptr;
 		break;
 	case '<':
-		--(this.ptr);
+		--ptr;
 		break;
 	case '+':
-		++(*this.ptr);
+		++(*ptr);
 		break;
 	case '-':
-		--(*this.ptr);
+		--(*ptr);
 		break;
 	case '.':
-		putchar(*(this.ptr));
+		putchar(*ptr);
 		break;
 	case ',':
-		*(this.ptr) = getchar();
+		*ptr = getchar();
 		break;
 	case '[':
-		if(*(this.ptr) == 0) {
-			this.PC = *loopEnd[cLoopDepth];
+		if(*ptr == 0) {
+			PC = *loopEnd[cLoopDepth];
 		} else {
-			this.cLoopDepth++;
+			cLoopDepth++;
 		}
 		break;
 	case ']':
-		if(*(this.ptr) == 0) {
-			this.cLoopDepth--;
+		if(*ptr == 0) {
+			cLoopDepth--;
 		} else {
 			PC = (*loopStart[cLoopDepth]);
 		}

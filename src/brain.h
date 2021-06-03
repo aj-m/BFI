@@ -1,11 +1,11 @@
 class Brain {
-	Brain();
 	Brain(int);
 	~Brain();
 	int fuck(const char*);
 	bool isValidBF(unsigned char);
 	bool eval(unsigned char);
 	
+	private:
 	unsigned char *ptr;
 	unsigned char *memory;
 	unsigned char *instructions;
@@ -16,4 +16,4 @@ class Brain {
 	int PC;
 	int **loopStart;
 	int **loopEnd;
-}
+};
