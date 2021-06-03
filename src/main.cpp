@@ -1,5 +1,9 @@
+#ifndef DEBUG
 #define DEBUG false
+#endif
+#ifndef SDBG
 #define SDBG false
+#endif
 
 #include <cstdlib>
 #include <string>
@@ -32,6 +36,9 @@ int main(int argc, char *argv[])
 {
     string filename;
     filename = "example.bf";
+	if( argc > 1) {
+		filename = argv[argc-1];
+	}
     ptr = arrayMemory;
     queue<int> beginLoopAddresses;
     stack<int> endLoopAddresses;
