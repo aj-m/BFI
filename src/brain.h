@@ -9,6 +9,7 @@ class Brain {
 	unsigned char *ptr;
 	unsigned char *memory;
 	unsigned char *instructions;
+	int cInstruction;
 	int cLoopEntries;
 	int cLoopExits;
 	int cLoopDepth;

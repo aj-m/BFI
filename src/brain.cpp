@@ -19,12 +19,73 @@ Brain::Brain(int memSize) {
 	} else {
 		actualMemSize = memSize;
 	}
-	memory = unsigned char[actualMemSize];
-	
-	
-		
-	
-		
-	
+	this.memory = new unsigned char[actualMemSize];
+	this.ptr = this.memory;
+	this.cInstruction = 0;
+	this.cLoopEntries = 0;
+	this.cLoopExits = 0;
+	this.cLoopDepth = 0;
+	this.PC = 0;
+
+	//this.
+}
+
+int Brain::fuck(const char* path) {
+}
+
+bool Brain::isValidBF(unsigned char item) {
+	switch(item) {
+	case '>':
+	case '<':
+	case '+':
+	case '-':
+	case '.':
+	case ',':
+	case '[':
+	case ']':
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool Brain::eval(unsigned char item) {
+	switch(item) {
+	case '>':
+		++(this.ptr);
+		break;
+	case '<':
+		--(this.ptr);
+		break;
+	case '+':
+		++(*this.ptr);
+		break;
+	case '-':
+		--(*this.ptr);
+		break;
+	case '.':
+		putchar(*(this.ptr));
+		break;
+	case ',':
+		*(this.ptr) = getchar();
+		break;
+	case '[':
+		if(*(this.ptr) == 0) {
+			this.PC = *loopEnd[cLoopDepth];
+		} else {
+			this.cLoopDepth++;
+		}
+		break;
+	case ']':
+		if(*(this.ptr) == 0) {
+			this.cLoopDepth--;
+		} else {
+			PC = (*loopStart[cLoopDepth]);
+		}
+		break;
+	default:
+		return false;
+	}
+	return true;
 }
 
