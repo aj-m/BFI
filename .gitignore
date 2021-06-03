@@ -1,1 +1,4 @@
 bin/
+autom4te.cache/
+*.m4
+*~
